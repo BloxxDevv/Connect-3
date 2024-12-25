@@ -1,18 +1,12 @@
 package com.bloxxdev.rows.field;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.bloxxdev.rows.constants.Textures;
 import org.mini2Dx.core.graphics.Graphics;
 
 public class Stone {
 
     public static final float SPEED = 1.4F;
-
-    Texture red = new Texture("Red.png");
-    Texture blue = new Texture("Blue.png");
-    Texture green = new Texture("Green.png");
-    Texture yellow = new Texture("Yellow.png");
-    Texture orange = new Texture("Orange.png");
-    Texture white = new Texture("White.png");
 
     public int x;
     public int y;
@@ -149,26 +143,26 @@ public class Stone {
     }
 
     public void render(Graphics g){
-        Texture tex = red;
+        Texture tex = Textures.RED;
 
         switch (stoneType){
             case RED:
-                tex = red;
+                tex = Textures.RED;
                 break;
             case BLUE:
-                tex = blue;
+                tex = Textures.BLUE;
                 break;
             case GREEN:
-                tex = green;
+                tex = Textures.GREEN;
                 break;
             case YELLOW:
-                tex = yellow;
+                tex = Textures.YELLOW;
                 break;
             case ORANGE:
-                tex = orange;
+                tex = Textures.ORANGE;
                 break;
             case WHITE:
-                tex = white;
+                tex = Textures.WHITE;
                 break;
         }
 

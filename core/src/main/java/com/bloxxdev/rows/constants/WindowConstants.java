@@ -1,8 +1,10 @@
-package com.bloxxdev.rows.window;
+package com.bloxxdev.rows.constants;
 
 import com.badlogic.gdx.graphics.Texture;
 
 public class WindowConstants {
+
+    private WindowConstants(){}
 
     public static final int WIDTH = 1200;
     public static final int HEIGHT = 900;

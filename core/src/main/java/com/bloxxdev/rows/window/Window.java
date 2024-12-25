@@ -1,5 +1,6 @@
 package com.bloxxdev.rows.window;
 
+import com.bloxxdev.rows.constants.WindowConstants;
 import org.mini2Dx.core.graphics.Graphics;
 import org.mini2Dx.core.graphics.TextureRegion;
 

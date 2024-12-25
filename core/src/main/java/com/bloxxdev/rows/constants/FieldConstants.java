@@ -1,6 +1,8 @@
-package com.bloxxdev.rows.field;
+package com.bloxxdev.rows.constants;
 
 public class FieldConstants {
+
+    private FieldConstants(){}
 
     public static final int TILE_SIZE = 60;
 

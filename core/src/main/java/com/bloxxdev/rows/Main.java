@@ -2,10 +2,11 @@ package com.bloxxdev.rows;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.bloxxdev.rows.field.FieldConstants;
+import com.bloxxdev.rows.constants.FieldConstants;
 import com.bloxxdev.rows.field.Stone;
 import com.bloxxdev.rows.field.StoneType;
 import com.bloxxdev.rows.field.Tile;
+import com.bloxxdev.rows.particles.ParticleEngine;
 import com.bloxxdev.rows.window.Window;
 import org.mini2Dx.core.game.BasicGame;
 import org.mini2Dx.core.graphics.Graphics;
@@ -41,9 +42,11 @@ public class Main extends BasicGame {
 
     private boolean test = false;
 
+    private ParticleEngine particleEngine;
+
 	@Override
     public void initialise() {
-        addInputListener();
+        this.particleEngine = new ParticleEngine();
 
         this.window = new Window();
         for (int x = 0; x < 18; x++) {
@@ -349,6 +352,8 @@ public class Main extends BasicGame {
                 }
             }
         }
+
+        particleEngine.tick();
     }
 
     private void applyGravity(){
@@ -451,10 +456,8 @@ public class Main extends BasicGame {
                 }
             }
         }
-    }
 
-    private void addInputListener(){
-
+        particleEngine.render(g);
     }
 
     private boolean isMoving(){
@@ -472,8 +475,10 @@ public class Main extends BasicGame {
             int[][] kill = isMatch(scheduledRemoval[i], scheduledRemoval[i+1]);
 
             for (int j = 0; kill != null && j < kill.length; j++) {
+                StoneType type = stones[kill[j][0]][kill[j][1]].getStoneType();
                 stones[kill[j][0]][kill[j][1]] = null;
                 tiles[kill[j][0]][kill[j][1]].toggleEmpty();
+                particleEngine.destroyStone(kill[j][0], kill[j][1], type);
             }
         }
         scheduledRemoval = new int[]{-1, -1, -1, -1};

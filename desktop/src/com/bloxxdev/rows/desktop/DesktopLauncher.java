@@ -1,6 +1,6 @@
 package com.bloxxdev.rows.desktop;
 
-import com.bloxxdev.rows.window.WindowConstants;
+import com.bloxxdev.rows.constants.WindowConstants;
 import org.mini2Dx.desktop.DesktopMini2DxConfig;
 
 import com.badlogic.gdx.backends.lwjgl.DesktopMini2DxGame;
