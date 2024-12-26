@@ -27,6 +27,9 @@ public class Stone {
 
     public boolean isMoving = false;
 
+    public boolean hBlast = false;
+    public boolean vBlast = false;
+
     public Stone(int x, int y, StoneType stoneType, int targetY){
         this.x = x;
         this.y = y;
@@ -167,6 +170,11 @@ public class Stone {
         }
 
         g.drawTexture(tex, x, y);
+
+        if (hBlast)
+            g.drawTexture(Textures.H_BLAST, x, y);
+        if (vBlast)
+            g.drawTexture(Textures.V_BLAST, x, y);
     }
 
     public void setTargetPos(int targetX, int targetY){

@@ -16,4 +16,6 @@ public class Textures {
     public static final Texture ORANGE = new Texture("Orange.png");
     public static final Texture WHITE = new Texture("White.png");
 
+    public static final Texture V_BLAST = new Texture("VertBlast.png");
+    public static final Texture H_BLAST = new Texture("HorBlast.png");
 }

@@ -30,6 +30,10 @@ public class Tile {
         return empty;
     }
 
+    public void setEmpty(){
+        this.empty = true;
+    }
+
     public void toggleEmpty(){
         this.empty = !this.empty;
     }

@@ -363,11 +363,13 @@ public class Main extends BasicGame {
                     if (tiles[x][y].isEmpty()){
                         if (tiles[x][y-1] != null) {
                             if (!tiles[x][y - 1].isEmpty()) {
-                                stones[x][y - 1].setTargetPos(toScreenCoords(x), toScreenCoords(y));
-                                stones[x][y] = stones[x][y-1];
-                                stones[x][y-1] = null;
-                                tiles[x][y].toggleEmpty();
-                                tiles[x][y-1].toggleEmpty();
+                                if (stones[x][y-1] != null) {
+                                    stones[x][y - 1].setTargetPos(toScreenCoords(x), toScreenCoords(y));
+                                    stones[x][y] = stones[x][y - 1];
+                                    stones[x][y - 1] = null;
+                                    tiles[x][y].toggleEmpty();
+                                    tiles[x][y - 1].toggleEmpty();
+                                }
                             }
                         }
                     }
@@ -414,7 +416,9 @@ public class Main extends BasicGame {
 
         if (!init) {
             scheduleRemoval();
-            spawnStones();
+            if (!isMoving()) {
+                spawnStones();
+            }
             applyGravity();
             if (isMoving())
                 test = true;
@@ -470,15 +474,61 @@ public class Main extends BasicGame {
         return false;
     }
 
+    private void killBlaster(int x, int y){
+        if (stones[x][y] != null) {
+            if (stones[x][y].vBlast) {
+                for (int yy = 0; yy < 13; yy++) {
+                    if (tiles[x][yy] != null && stones[x][yy] != null) {
+                        StoneType t = stones[x][yy].getStoneType();
+                        if (stones[x][yy] != null && stones[x][yy].vBlast) {
+                            if (yy != y)
+                                killBlaster(x, yy);
+                        }
+                        if (stones[x][yy] != null && stones[x][yy].hBlast) {
+                            if (yy != y)
+                                killBlaster(x, yy);
+                        }
+                        stones[x][yy] = null;
+                        tiles[x][yy].setEmpty();
+                        particleEngine.destroyStone(x, yy, t);
+                    }
+                }
+            } else if (stones[x][y].hBlast) {
+                for (int xx = 0; xx < 18; xx++) {
+                    if (tiles[xx][y] != null && stones[xx][y] != null) {
+                        StoneType t = stones[xx][y].getStoneType();
+                        if (stones[xx][y] != null && stones[xx][y].vBlast) {
+                            if (xx != x)
+                                killBlaster(xx, y);
+                        }
+                        if (stones[xx][y] != null && stones[xx][y].hBlast) {
+                            if (xx != x)
+                                killBlaster(xx, y);
+                        }
+                        stones[xx][y] = null;
+                        tiles[xx][y].setEmpty();
+                        particleEngine.destroyStone(xx, y, t);
+                    }
+                }
+            }
+        }
+    }
+
     private void removeOnSchedule(){
         for (int i = 0; i < scheduledRemoval.length; i+=2) {
             int[][] kill = isMatch(scheduledRemoval[i], scheduledRemoval[i+1]);
 
             for (int j = 0; kill != null && j < kill.length; j++) {
-                StoneType type = stones[kill[j][0]][kill[j][1]].getStoneType();
-                stones[kill[j][0]][kill[j][1]] = null;
-                tiles[kill[j][0]][kill[j][1]].toggleEmpty();
-                particleEngine.destroyStone(kill[j][0], kill[j][1], type);
+                if (stones[kill[j][0]][kill[j][1]] != null) {
+                    StoneType type = stones[kill[j][0]][kill[j][1]].getStoneType();
+                    if (stones[kill[j][0]][kill[j][1]].vBlast || stones[kill[j][0]][kill[j][1]].hBlast){
+                        killBlaster(kill[j][0], kill[j][1]);
+                    } else {
+                        stones[kill[j][0]][kill[j][1]] = null;
+                        tiles[kill[j][0]][kill[j][1]].toggleEmpty();
+                        particleEngine.destroyStone(kill[j][0], kill[j][1], type);
+                    }
+                }
             }
         }
         scheduledRemoval = new int[]{-1, -1, -1, -1};
@@ -527,19 +577,23 @@ public class Main extends BasicGame {
         //4 Row
         //HOR R
         if (x-2 >= 0 && x+1 < 18 && stones[x-2][y] != null && stones[x-1][y] != null && stones[x+1][y] != null && stones[x-1][y].getStoneType() == type && stones[x+1][y].getStoneType() == type&& stones[x-2][y].getStoneType() == type) {
-            return new int[][]{{x-2, y}, {x-1, y}, {x, y}, {x+1, y}};
+            stones[x][y].vBlast = true;
+            return new int[][]{{x-2, y}, {x-1, y}, {x+1, y}};
         }
         //HOR L
         if (x-1 >= 0 && x+2 < 18 && stones[x-1][y] != null && stones[x+2][y] != null && stones[x+1][y] != null && stones[x-1][y].getStoneType() == type && stones[x+1][y].getStoneType() == type && stones[x+2][y].getStoneType() == type) {
-            return new int[][]{{x-1, y}, {x, y}, {x+1, y}, {x+2, y}};
+            stones[x][y].vBlast = true;
+            return new int[][]{{x-1, y}, {x+1, y}, {x+2, y}};
         }
         //VERT U
         if (y-1 >= 0 && y+2 < 13 && stones[x][y-1] != null && stones[x][y+2] != null && stones[x][y+1] != null && stones[x][y-1].getStoneType() == type && stones[x][y+1].getStoneType() == type && stones[x][y+2].getStoneType() == type) {
-            return new int[][]{{x, y-1}, {x, y}, {x, y+1}, {x, y+2}};
+            stones[x][y].hBlast = true;
+            return new int[][]{{x, y-1}, {x, y+1}, {x, y+2}};
         }
         //VERT D
         if (y-2 >= 0 && y+1 < 13 && stones[x][y-2] != null && stones[x][y-1] != null && stones[x][y+1] != null && stones[x][y-1].getStoneType() == type && stones[x][y+1].getStoneType() == type && stones[x][y-2].getStoneType() == type) {
-            return new int[][]{{x, y-2}, {x, y-1}, {x, y}, {x, y+1}};
+            stones[x][y].hBlast = true;
+            return new int[][]{{x, y-2}, {x, y-1}, {x, y+1}};
         }
 
         if (x-1 >= 0 && x+1 < 18 && stones[x-1][y] != null && stones[x+1][y] != null && stones[x-1][y].getStoneType() == type && stones[x+1][y].getStoneType() == type){
